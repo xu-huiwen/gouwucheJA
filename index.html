@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="car">
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	    <script src="jquery.js"></script>
+		<!-- 新 Bootstrap 核心 CSS 文件 -->
+<link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css">
+<!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+<script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+<script src="http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="angular.js"></script>
+		<style>
+			.active{
+				display: block;
+			}
+
+		</style>
+		
+	</head>
+<body ng-controller="mainCtrl" >
+	<nav class="navbar navbar-inverse" role="navigation">
+    <div class="container-fluid">
+        <ul class="nav navbar-nav navbar-right" >
+        <li class="dropdown" >
+          <!--<a class="dropdown-toggle" data-toggle="dropdown">购物车 
+          	<span class="caret"></span>
+          </a>-->
+          <div car></div>
+          <ul class="dropdown-menu" role="menu">
+            <li ng-repeat="v in cars" >
+            	<a href="#">
+	            	<span>{{v.name}}</span>
+	            	<span class="glyphicon glyphicon-arrow-down"ng-click="jian($index);"></span>
+	            	<span>{{v.num}}</span>
+	            	<span class="glyphicon glyphicon-arrow-up"ng-click="jia($index);"></span>
+	            	<span>{{v.price*v.num}}</span>
+	            	<span ng-click="remove($index)">删除</span>
+                </a>
+            </li>
+            <li class="divider"></li>
+            <li>
+            	<a ng-if="total()!==0"href="#">共：{{total()}} 元。</a>
+            	<a ng-if="total()==0"href="#">
+            		亲，购物车是空的
+            	</a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+  </div><!-- /.container-fluid -->
+</nav>
+<hr />
+<div class="container">
+    <div class="row">
+  <div class="col-sm-3" ng-repeat="v in goods">
+    <div class="thumbnail">
+      <img src="1.jpg" alt="...">
+      <div class="caption">
+        <h5>{{v.name}}</h5>
+        <p>{{v.price}}</p>
+        <p>
+        	<a href="javascript:;" class="btn btn-default" role="button" ng-click="add2Car($index);">加入购物车</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+		<!--{{(goods.length>3)? "a":"b"}}
+		{{add(3,4);min(3,4)}}
+		<div ng-init="a = 14">
+			<div class="b " ng-class="{active:(a===12)}"></div>
+		</div>
+		<div ng-click="a=12">点击</div>
+		<div ng-hide="a===14">sdvgsrhgshgs</div>
+		<ul id="goods">
+			<li ng-repeat="v in goods">
+				<p>
+					<span>名字:</span>
+					<span>{{v.name}}</span>
+				</p>
+				<p>
+					<span>价格</span>
+					<span>{{v.price}}</span>
+				</p>
+				<div class="">加入购物车</div>
+			</li>
+		</ul>-->
+	</body>
+	
+</html>
+	<script>
+	var app = angular.module("car",[]);
+	app.directive("car",[function(){
+		return {
+			restrict:"A",  //作为div属性使用
+			template:"<a class='dropdown-toggle'>购物车<span class='caret'></span></a>",
+			replace:true,  //写上直接替换，不写嵌套在里边
+			link:function($scope,el){
+				var drop=$(".dropdown-menu");
+				$(el).on("click",function(){
+					drop.toggleClass("active")
+					return false;
+				})
+				drop.on("click",false)
+				$(document).on("click",function(){
+					drop.removeClass("active")
+				})
+			}
+		}
+	}])
+		app.controller("mainCtrl",["$scope",function($scope){
+			$scope.goods=[
+			{id:1001, name:"洗衣机", price:299},
+			{id:1002, name:"电视机", price:588},
+			{id:1003, name:"沙发", price:800},
+			{id:1004, name:"床", price:2000}
+			];
+			$scope.add2Car=function (index){
+				var v=$scope.goods[index];
+				 var m=hasId(v.id);
+                if(m!==-1){
+                    var n=$scope.cars[m].num+=1;
+//                  $scope.cars[m].price*=n;
+                }else{
+                    v.num=1;
+                    $scope.cars.push(v);
+                }
+            }
+			$scope.cars=[
+			{id: 1001, name:"洗衣机", price: 299 ,num: 2},
+			{id: 1002,  name:"电视机", price: 588,num: 1}
+			];
+			$scope.remove = function (index){
+				$scope.cars.splice(index,1);
+			}
+			function hasId(id){
+				for(var i=0;i<$scope.cars.length;i++){
+					if($scope.cars[i].id===id){
+						return i;
+					}
+				}
+				return -1;
+			}
+			$scope.total=function(){
+				var r=0;
+				for(var i=0;i<$scope.cars.length;i++){
+					var v=$scope.cars[i].price*$scope.cars[i].num;
+                    r+=v;
+				
+				}
+				return r;
+			}
+			$scope.jia=function(index){
+                $scope.cars[index].num+=1;
+            }
+			$scope.jian=function(index){
+                var n=$scope.cars[index].num;
+                n-=1;
+                if(n==0){
+                     $scope.cars.splice(index,1);
+                }else{
+                    $scope.cars[index].num-=1;
+                }
+                
+            }
+			
+			
+			
+		}])
+		
+    </script>
